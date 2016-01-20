@@ -1,3 +1,4 @@
+@setlocal enableextensions enabledelayedexpansion
 @echo off
 
 rem Set this equal to where your Afterbirth resources folder is, in case everything else fails
@@ -7,7 +8,7 @@ if not "%ResourcesFolder%"=="" goto ResourceFolderIsSet
 
 set ResSubFolder=\SteamApps\common\The Binding of Isaac Rebirth\resources
 set RegistrySteam="HKCU\Software\Valve\Steam"
-set RegistrySteamPath=SteamPath
+set RegistrySteamPath="SteamPath"
 set SteamPath=
 
 rem Check if Steam is actually installed
@@ -19,17 +20,22 @@ reg query %RegistrySteam% /V %RegistrySteamPath% > nul || (
 
 rem Query Steam's install path
 for /f "tokens=2,*" %%a in ('reg query %RegistrySteam% /V %RegistrySteamPath% ^| findstr %RegistrySteamPath%') do (
-    set SteamPath=%%b
+    set SteamPath=%%~fb
 )
 
 rem Search the resource directory from Steam's install and the library paths
-if not exist "%SteamPath%%ResSubFolder%" (
-	for /f "tokens=1,*" %%a in ('type "%SteamPath%\\config\\config.vdf" ^| findstr BaseInstallFolder_ ') do (
-		if exist "%%b%ResSubFolder%" (set ResourcesFolder=%%~b%ResSubFolder%)
-	)
+if exist "%SteamPath%%ResSubFolder%" (
+	set ResourcesFolder="%SteamPath%%ResSubFolder%"
 ) else (
-	set ResourcesFolder=%SteamPath%%ResSubFolder%
+	for /f "tokens=1,*" %%a in ('type "%SteamPath%\config\config.vdf" ^| findstr BaseInstallFolder_ ') do (
+		if exist "%%~fb%ResSubFolder%" (
+			set ResourcesFolder="%%~fb%ResSubFolder%"
+		)
+	)
 )
+
+set ResourcesFolder=!ResourcesFolder:~1,-1!
+echo Afterbirth Resource Folder found at %ResourcesFolder%
 
 :ResourceFolderIsSet
 
@@ -81,7 +87,7 @@ pause
 exit /B
 
 rem Start the installation
-:start 
+:start
 
 rem Delete all files
 for %%i in ("%ResourcesFolder%\*") do (
