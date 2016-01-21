@@ -21,11 +21,7 @@ reg query %RegistrySteam% /V %RegistrySteamPath% > nul || (
 
 rem Query Steam's install path
 for /f "tokens=2,*" %%a in ('reg query %RegistrySteam% /V %RegistrySteamPath% ^| findstr %RegistrySteamPath%') do (
-<<<<<<< HEAD
-    set SteamPath=%%~fb
-=======
 	set SteamPath=%%~fb
->>>>>>> remotes/zamiell/master
 )
 
 rem Search the resource directory from Steam's install and the library paths
@@ -40,10 +36,6 @@ if exist "%SteamPath%%ResSubFolder%" (
 )
 
 set ResourcesFolder=!ResourcesFolder:~1,-1!
-<<<<<<< HEAD
-echo Afterbirth Resource Folder found at %ResourcesFolder%
-=======
->>>>>>> remotes/zamiell/master
 
 :ResourceFolderIsSet
 
